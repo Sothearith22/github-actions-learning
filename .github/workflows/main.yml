@@ -1,4 +1,4 @@
-name: Node.js CI
+name: Environment Variables Demo
 
 on:
   push:
@@ -6,23 +6,19 @@ on:
       - main
 
 jobs:
-  run-javascript:
+  env-demo:
     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+    env:
+      APP_NAME: CI_CD_LEARNING
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Check Node Version
-        run: node -v
+      - run: npm install
 
-      - name: Install Dependencies
-        run: npm install
-        
-      - name: Run Math File
-        run: node math.js
+      - run: node index.js

@@ -1,1 +1,1 @@
-console.log("I am learning CI/CD");
+console.log("App Name:", process.env.APP_NAME);
