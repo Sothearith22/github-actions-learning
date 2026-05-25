@@ -23,6 +23,6 @@ jobs:
 
       - name: Install Dependencies
         run: npm install
-
-      - name: Run JavaScript File
-        run: npm start
+        
+      - name: Run Math File
+        run: node math.js
