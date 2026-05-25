@@ -1,1 +1,1 @@
-console.log("Hello CI/CD");
+console.log("I am learning CI/CD");
