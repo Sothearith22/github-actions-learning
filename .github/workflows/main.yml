@@ -1,4 +1,4 @@
-name: Artifact Demo
+name: Upload and Download Artifact
 
 on:
   push:
@@ -11,14 +11,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Show File
-        run: cat .github/workflows/hello.txt
+      - run: echo "Hello CI/CD" > hello.txt
 
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
-          name: my-artifact
-          path: .github/workflows/hello.txt
+          name: my-file
+          path: hello.txt
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: my-file
+
+      - run: cat hello.txt
