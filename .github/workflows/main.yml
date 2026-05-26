@@ -1,31 +1,55 @@
-name: Multi Job Pipeline
+name: CI Build and Test Artifacts
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
-
-  test:
+  # Job 1: Build the project and upload the artifact
+  build-project:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Test Step
-        run: echo "Running Tests..."
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-  build:
-    needs: test
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build Application
+        run: npm run build # Generates the 'dist/' folder
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-build-files
+          path: dist/
+          retention-days: 1
+
+  # Job 2: Automatically verify if the artifact is valid
+  verify-build-artifact:
     runs-on: ubuntu-latest
-
+    needs: build-project # Ensures Job 1 completes successfully first
+    
     steps:
-      - name: Build Step
-        run: echo "Building Application..."
+      # 1. Download the artifact saved from the previous job
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: production-build-files
+          path: final-build/ # Places the downloaded files into this folder
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Deploy Step
-        run: echo "Deploying Application..."
+      # 2. Run assertions/commands to test the files
+      - name: Check if index.html exists
+        run: |
+          ls -la final-build/
+          if [ -f "final-build/index.html" ]; then
+            echo "✅ Test Passed: Artifact contains the correct files!"
+          else
+            echo "❌ Test Failed: index.html was not found!"
+            exit 1
+          fi
