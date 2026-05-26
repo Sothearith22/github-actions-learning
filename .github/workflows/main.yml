@@ -1,55 +1,24 @@
-name: CI Build and Test Artifacts
+name: Artifact Demo
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
-  # Job 1: Build the project and upload the artifact
-  build-project:
+
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout Code
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+      - name: Show File
+        run: cat hello.txt
 
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Build Application
-        run: npm run build # Generates the 'dist/' folder
-
-      - name: Upload Build Artifact
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: production-build-files
-          path: dist/
-          retention-days: 1
-
-  # Job 2: Automatically verify if the artifact is valid
-  verify-build-artifact:
-    runs-on: ubuntu-latest
-    needs: build-project # Ensures Job 1 completes successfully first
-    
-    steps:
-      # 1. Download the artifact saved from the previous job
-      - name: Download Build Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: production-build-files
-          path: final-build/ # Places the downloaded files into this folder
-
-      # 2. Run assertions/commands to test the files
-      - name: Check if index.html exists
-        run: |
-          ls -la final-build/
-          if [ -f "final-build/index.html" ]; then
-            echo "✅ Test Passed: Artifact contains the correct files!"
-          else
-            echo "❌ Test Failed: index.html was not found!"
-            exit 1
-          fi
+          name: my-artifact
+          path: hello.txt
