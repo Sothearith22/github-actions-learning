@@ -1,4 +1,4 @@
-name: Upload and Download Artifact
+name: Cache Demo
 
 on:
   push:
@@ -6,27 +6,21 @@ on:
       - main
 
 jobs:
-
-  build:
+  cache-job:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - run: echo "Hello CI/CD" > hello.txt
-
-      - uses: actions/upload-artifact@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          name: my-file
-          path: hello.txt
+          node-version: 20
+          cache: 'npm'
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
+      - name: Install Dependencies
+        run: npm install
 
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: my-file
-
-      - run: cat hello.txt
+      - name: Run App
+        run: echo "Caching Complete"
