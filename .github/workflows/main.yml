@@ -1,15 +1,31 @@
-name: Secrets Demo
+name: Multi Job Pipline
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
-  secret-demo:
+  test:
     runs-on: ubuntu-latest
 
-    env:
-      API_KEY: ${{ secrets.API_KEY }}
+    step:
+      - name: Test Step
+      run: echo "Running Tests..."
+  
+  build:
+    needs: test
+    runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Build Step
+        run: echo "Building Application..."
 
-      - run: echo "Secret Loaded Successfully"
+  deploy:
+    needs: build
+    runs-om: ubuntu latest
+
+    step:
+      - name: Deploy Step
+        run: echo "Deploying Application"
+
